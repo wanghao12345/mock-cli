@@ -2,6 +2,11 @@
 name = "cli"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/wanghao12345/mock-cli"
+
+[[bin]]
+name = "mock-cli"
+path = "src/main.rs"
 
 [dependencies]
 clap = "4.6.1"

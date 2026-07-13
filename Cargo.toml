@@ -4,3 +4,8 @@ members = ["crates/cli", "crates/core", "crates/server"]
 
 [workspace.dependencies]
 colored = "3.1.1"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
