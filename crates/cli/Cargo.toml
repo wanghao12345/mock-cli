@@ -9,5 +9,9 @@ name = "mock-cli"
 path = "src/main.rs"
 
 [dependencies]
-clap = "4.6.1"
 colored = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+mock-cli-server = { path = "../server" }
+mock-cli-core = { path = "../core" }
