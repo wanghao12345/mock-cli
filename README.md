@@ -7,7 +7,10 @@ Start mocking in milliseconds. Zero config. Dynamic fake data.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 [![CI](https://github.com/wanghao12345/mock-cli/actions/workflows/release.yml/badge.svg)](https://github.com/wanghao12345/mock-cli/actions)
+[![npm version](https://img.shields.io/npm/v/@mock-cli/server.svg)](https://www.npmjs.com/package/@mock-cli/server)
 [![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
+
+**English** | [简体中文](README.zh-CN.md)
 
 [Installation](#installation) • [Quick Start](#quick-start) • [Features](#features) • [CLI Reference](#cli-reference) • [Roadmap](#roadmap)
 
@@ -31,7 +34,17 @@ Most OpenAPI mock servers are slow, require Docker, or return static stubs. `moc
 
 ## Installation
 
-### Build from source (recommended for now)
+### npm (recommended)
+
+```bash
+npm install -g @mock-cli/server
+```
+
+### Pre-built binaries
+
+Download the latest release for your platform from [GitHub Releases](https://github.com/wanghao12345/mock-cli/releases).
+
+### Build from source
 
 ```bash
 git clone https://github.com/wanghao12345/mock-cli.git
@@ -39,14 +52,10 @@ cd mock-cli
 cargo install --path crates/cli
 ```
 
-### Pre-built binaries
-
-Download the latest release from [GitHub Releases](https://github.com/wanghao12345/mock-cli/releases).
-
 ### Run directly with cargo
 
 ```bash
-cargo run --release -- examples/petstore.yaml
+cargo run --release -- examples/swagger.yaml
 ```
 
 
@@ -55,10 +64,10 @@ cargo run --release -- examples/petstore.yaml
 **1. Use the bundled example spec:**
 
 ```bash
-cargo run -- examples/petstore.yaml
+mock-cli examples/swagger.yaml
 ```
 
-Or create your own `petstore.yaml`:
+Or create your own `swagger.yaml`:
 
 ```yaml
 openapi: 3.0.3
@@ -93,11 +102,11 @@ paths:
 **2. Start the mock server:**
 
 ```bash
-mock-cli petstore.yaml
+mock-cli swagger.yaml
 ```
 
 ```text
-✓ Loaded "petstore.yaml" (1 paths)
+✓ Loaded "swagger.yaml" (1 paths)
 ✓ Listening on 127.0.0.1:3333
 ```
 
@@ -205,7 +214,7 @@ crates/
 ```bash
 git clone https://github.com/wanghao12345/mock-cli.git
 cd mock-cli
-cargo run -- examples/petstore.yaml
+cargo run -- examples/swagger.yaml
 ```
 
 
