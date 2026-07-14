@@ -174,8 +174,16 @@ fn generate_value_from_schema(
                 VariantOrUnknownOrEmpty::Empty => json!(Name().fake::<String>()),
             }
         }
-        // Use u32 instead of i32 to avoid the i32::MIN.abs() overflow panic.
-        SchemaKind::Type(Type::Integer(_)) => {
+        // Integer enums: pick a random allowed value before the default random path.
+        SchemaKind::Type(Type::Integer(int_type)) => {
+            if !int_type.enumeration.is_empty() {
+                let idx = rand::random::<u64>() as usize % int_type.enumeration.len();
+                return match int_type.enumeration[idx] {
+                    Some(n) => json!(n),
+                    None => Value::Null,
+                };
+            }
+            // Use u32 instead of i32 to avoid the i32::MIN.abs() overflow panic.
             json!(rand::random::<u32>() % 1000)
         }
         SchemaKind::Type(Type::Number(_)) => {

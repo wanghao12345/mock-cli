@@ -1,0 +1,429 @@
+openapi: 3.0.3
+info:
+  title: Full Feature Test API
+  version: 1.0.0
+  description: |
+    A comprehensive OpenAPI spec that exercises every feature supported by mock-cli:
+    - All scalar types (string/integer/number/boolean)
+    - All string formats (email/uuid/date/date-time/uri/password/byte/binary)
+    - Enums (string + integer)
+    - Objects with required + optional fields
+    - Arrays with minItems/maxItems
+    - Nested objects and arrays
+    - $ref to schemas and $ref to responses
+    - Circular $ref (self-referencing)
+    - Multiple HTTP methods (GET/POST/PUT/DELETE/PATCH/OPTIONS/HEAD/TRACE)
+    - Path parameter injection (field name matches param name)
+servers:
+  - url: http://localhost:3333
+paths:
+  # ===== Path parameter injection + all HTTP methods =====
+  /users/{userId}:
+    get:
+      summary: Get user by ID (path param injection, userId)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Update user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Delete user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MutationResult'
+    patch:
+      summary: Patch user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    options:
+      summary: CORS preflight for user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    head:
+      summary: Check user exists
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    trace:
+      summary: Trace user endpoint
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /users:
+    get:
+      summary: List users (array with minItems/maxItems)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+                minItems: 2
+                maxItems: 4
+    post:
+      summary: Create user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  # ===== String formats showcase =====
+  /formats:
+    get:
+      summary: Demonstrate all supported string formats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormatShowcase'
+  # ===== Enums =====
+  /orders/{orderId}:
+    get:
+      summary: Get order (string enum + integer enum)
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  # ===== Nested arrays + objects =====
+  /products:
+    get:
+      summary: List products (nested array of objects with nested tags)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+                minItems: 1
+                maxItems: 3
+  # ===== Circular reference (tree) =====
+  /tree:
+    get:
+      summary: Get tree (circular $ref, Node -> Node)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+  # ===== $ref to response =====
+  /health:
+    get:
+      summary: Health check (uses $ref to components/responses)
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+  # ===== Empty 200 (no body) =====
+  /noop:
+    get:
+      summary: Returns null (200 with no schema)
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: Echoes the path parameter value
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        role:
+          type: string
+          enum: [admin, user, guest]
+        createdAt:
+          type: string
+          format: date-time
+        birthday:
+          type: string
+          format: date
+        homepage:
+          type: string
+          format: uri
+        avatarId:
+          type: string
+          format: uuid
+        password:
+          type: string
+          format: password
+        isActive:
+          type: boolean
+        balance:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 3
+        address:
+          $ref: '#/components/schemas/Address'
+      required:
+        - userId
+        - email
+        - username
+        - role
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+          enum: [US, CN, JP, UK]
+      required:
+        - street
+        - city
+    FormatShowcase:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        uuid:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        dateTime:
+          type: string
+          format: date-time
+        uri:
+          type: string
+          format: uri
+        password:
+          type: string
+          format: password
+        byte:
+          type: string
+          format: byte
+        binary:
+          type: string
+          format: binary
+        plainString:
+          type: string
+        stringEnum:
+          type: string
+          enum: [active, inactive, pending]
+        intEnum:
+          type: integer
+          enum: [1, 2, 3]
+        optional:
+          type: string
+          description: Optional field, sometimes null
+      required:
+        - email
+        - uuid
+        - date
+        - dateTime
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+          description: Echoes path param when name matches
+        status:
+          type: string
+          enum: [pending, paid, shipped, delivered, cancelled]
+        priority:
+          type: integer
+          enum: [1, 2, 3]
+        totalAmount:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          minItems: 1
+          maxItems: 5
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - orderId
+        - status
+        - items
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+      required:
+        - productId
+        - name
+        - quantity
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: number
+        categories:
+          type: array
+          items:
+            type: string
+            enum: [electronics, books, clothing, food]
+          minItems: 1
+          maxItems: 2
+        inStock:
+          type: boolean
+        metadata:
+          type: object
+          properties:
+            manufacturer:
+              type: string
+            sku:
+              type: string
+          required:
+            - manufacturer
+      required:
+        - id
+        - name
+        - price
+    Node:
+      type: object
+      description: Circular reference - Node.next references Node
+      properties:
+        value:
+          type: integer
+        label:
+          type: string
+        next:
+          $ref: '#/components/schemas/Node'
+      required:
+        - value
+    MutationResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        affected:
+          type: integer
+        message:
+          type: string
+      required:
+        - success
+  responses:
+    HealthResponse:
+      description: Health check response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [ok, degraded]
+              version:
+                type: string
+              uptime:
+                type: integer
+            required:
+              - status
+              - version
