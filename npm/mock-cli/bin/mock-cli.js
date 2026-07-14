@@ -28,6 +28,18 @@ if (!fs.existsSync(binaryPath)) {
   process.exit(1);
 }
 
+// Ensure the binary is executable. npm tarballs may not preserve the execute
+// permission bit across publish/install, so we force it here on Unix.
+// On Windows, execute permission is governed by the .exe extension, not the bit.
+if (process.platform !== 'win32') {
+  try {
+    fs.chmodSync(binaryPath, 0o755);
+  } catch (e) {
+    // If chmod fails (e.g. read-only location), fall through and let spawn
+    // surface the error — there's nothing else we can do here.
+  }
+}
+
 // Forward all command-line arguments to the binary.
 const child = spawn(binaryPath, process.argv.slice(2), { stdio: 'inherit' });
 child.on('exit', (code) => process.exit(code ?? 1));

@@ -1,2569 +1,429 @@
-openapi: 3.0.0
+openapi: 3.0.3
+info:
+  title: Full Feature Test API
+  version: 1.0.0
+  description: |
+    A comprehensive OpenAPI spec that exercises every feature supported by mock-cli:
+    - All scalar types (string/integer/number/boolean)
+    - All string formats (email/uuid/date/date-time/uri/password/byte/binary)
+    - Enums (string + integer)
+    - Objects with required + optional fields
+    - Arrays with minItems/maxItems
+    - Nested objects and arrays
+    - $ref to schemas and $ref to responses
+    - Circular $ref (self-referencing)
+    - Multiple HTTP methods (GET/POST/PUT/DELETE/PATCH/OPTIONS/HEAD/TRACE)
+    - Path parameter injection (field name matches param name)
+servers:
+  - url: http://localhost:3333
+paths:
+  # ===== Path parameter injection + all HTTP methods =====
+  /users/{userId}:
+    get:
+      summary: Get user by ID (path param injection, userId)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Update user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Delete user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MutationResult'
+    patch:
+      summary: Patch user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    options:
+      summary: CORS preflight for user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    head:
+      summary: Check user exists
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    trace:
+      summary: Trace user endpoint
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /users:
+    get:
+      summary: List users (array with minItems/maxItems)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+                minItems: 2
+                maxItems: 4
+    post:
+      summary: Create user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  # ===== String formats showcase =====
+  /formats:
+    get:
+      summary: Demonstrate all supported string formats
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormatShowcase'
+  # ===== Enums =====
+  /orders/{orderId}:
+    get:
+      summary: Get order (string enum + integer enum)
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  # ===== Nested arrays + objects =====
+  /products:
+    get:
+      summary: List products (nested array of objects with nested tags)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+                minItems: 1
+                maxItems: 3
+  # ===== Circular reference (tree) =====
+  /tree:
+    get:
+      summary: Get tree (circular $ref, Node -> Node)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Node'
+  # ===== $ref to response =====
+  /health:
+    get:
+      summary: Health check (uses $ref to components/responses)
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'
+  # ===== Empty 200 (no body) =====
+  /noop:
+    get:
+      summary: Returns null (200 with no schema)
+      responses:
+        '200':
+          description: OK
 components:
-  examples: {}
-  headers: {}
-  parameters: {}
-  requestBodies: {}
-  responses: {}
   schemas:
-    Record_string.never_:
-      properties: {}
+    User:
       type: object
-      description: Construct a type with a set of properties K of type T
-    StudyAssetsSeriesDetails:
       properties:
-        Patient_ID:
-          type: string
-          enum:
-            - nuratome
-          nullable: false
-        Study_ID:
-          type: string
-          enum:
-            - nuratome
-          nullable: false
-        StudyInstanceUID:
-          type: string
-          enum:
-            - nuratome
-          nullable: false
-        Series_ID:
-          type: string
-          enum:
-            - nuratome-primary-anatomical
-          nullable: false
-        Series_Description:
-          type: string
-          enum:
-            - Nuratome primary anatomical
-          nullable: false
-        SeriesInstanceUID:
-          type: string
-          enum:
-            - nuratome-primary-anatomical
-          nullable: false
-        Scan_Type:
-          type: string
-          enum:
-            - anatomical
-          nullable: false
-        AnatomicalType:
-          type: string
-          enum:
-            - T1
-          nullable: false
-      required:
-        - Patient_ID
-        - Study_ID
-        - StudyInstanceUID
-        - Series_ID
-        - Series_Description
-        - SeriesInstanceUID
-        - Scan_Type
-        - AnatomicalType
-      type: object
-      additionalProperties: false
-    StudyAssetsJobManifest:
-      properties:
-        countOfSlicesRemoved:
-          type: number
-          enum:
-            - 0
-          nullable: false
-        primarySeriesId:
-          type: string
-          enum:
-            - nuratome-primary-anatomical
-          nullable: false
-        hasConnectome:
-          type: boolean
-        seriesDetails:
-          properties:
-            nuratome-primary-anatomical:
-              $ref: "#/components/schemas/StudyAssetsSeriesDetails"
-          required:
-            - nuratome-primary-anatomical
-          type: object
-      required:
-        - countOfSlicesRemoved
-        - primarySeriesId
-        - hasConnectome
-        - seriesDetails
-      type: object
-      additionalProperties: false
-    AtlasTypes:
-      enum:
-        - conservative
-        - fitted
-        - subcortical_fitted
-      type: string
-    TractStreamingRequest:
-      properties:
-        atlas:
-          $ref: "#/components/schemas/AtlasTypes"
-        facilityId:
-          type: string
-        jobId:
-          type: string
-        parcellationIds:
-          items:
-            type: number
-            format: double
-          type: array
-      required:
-        - atlas
-        - parcellationIds
-      type: object
-      additionalProperties: false
-    StudyAssetsConnectomeData:
-      properties:
-        data:
-          items:
-            items:
-              type: number
-              format: double
-              nullable: true
-            type: array
-          type: array
-        min:
-          type: number
-          format: double
-        max:
-          type: number
-          format: double
-      required:
-        - data
-        - min
-        - max
-      type: object
-      additionalProperties: false
-    DataScienceModel:
-      enum:
-        - conservative
-        - fitted
-      type: string
-    DataType:
-      enum:
-        - correlation
-        - anomaly
-        - covariance
-      type: string
-    StandardDeviation:
-      type: number
-      enum:
-        - 2
-        - 3
-    NuratomeSessionAuthType:
-      type: string
-      enum:
-        - Quicktome
-        - SSO
-        - Federated
-    NuratomeQuicktomePasswordPolicy:
-      properties:
-        expiration:
-          type: number
-          format: double
-        lowerCaseCount:
-          type: number
-          format: double
-        minimumLength:
-          type: number
-          format: double
-        numericCount:
-          type: number
-          format: double
-        specialCharacterCount:
-          type: number
-          format: double
-        specialCharacters:
-          type: string
-        upperCaseCount:
-          type: number
-          format: double
-      required:
-        - expiration
-        - lowerCaseCount
-        - minimumLength
-        - numericCount
-        - specialCharacterCount
-        - specialCharacters
-        - upperCaseCount
-      type: object
-      additionalProperties: false
-    WorkflowId:
-      type: string
-      enum:
-        - SC
-        - FC
-        - FC_PLUS
-        - PERSONALIZED_FC
-        - T1_FITTED_ATLAS
-    ProductSurfaceWorkflowAvailabilityOption:
-      properties:
-        id:
-          $ref: "#/components/schemas/WorkflowId"
-        title:
-          type: string
-        category:
-          type: string
-        cardAsset:
-          type: string
-        executionWorkflow:
-          type: string
-          enum:
-            - STRUCTURAL
-            - FUNCTIONAL
-            - CRC_ANOMALY
-        enabled:
-          type: boolean
-        disabledReason:
-          type: string
-        previewAvailable:
-          type: boolean
-      required:
-        - id
-        - title
-        - category
-        - cardAsset
-        - executionWorkflow
-        - enabled
-        - previewAvailable
-      type: object
-      additionalProperties: false
-    NuratomeFeedbackHelpConfig:
-      properties:
+        userId:
+          type: integer
+          description: Echoes the path parameter value
         email:
           type: string
-        markdown:
-          type: string
-      type: object
-      additionalProperties: false
-    CapabilityFlag:
-      properties:
-        enabled:
-          type: boolean
-        disabledReason:
-          type: string
-      required:
-        - enabled
-      type: object
-      additionalProperties: false
-    Record_sc-or-fc-or-fcPlus-or-personalizedFc-or-t1FittedAtlas.CapabilityFlag_:
-      properties:
-        sc:
-          $ref: "#/components/schemas/CapabilityFlag"
-        fc:
-          $ref: "#/components/schemas/CapabilityFlag"
-        fcPlus:
-          $ref: "#/components/schemas/CapabilityFlag"
-        personalizedFc:
-          $ref: "#/components/schemas/CapabilityFlag"
-        t1FittedAtlas:
-          $ref: "#/components/schemas/CapabilityFlag"
-      required:
-        - sc
-        - fc
-        - fcPlus
-        - personalizedFc
-        - t1FittedAtlas
-      type: object
-      description: Construct a type with a set of properties K of type T
-    NuratomeProductCapabilities:
-      properties:
-        query:
-          $ref: "#/components/schemas/CapabilityFlag"
-        newCase:
-          $ref: "#/components/schemas/CapabilityFlag"
-        uploadDicomZip:
-          $ref: "#/components/schemas/CapabilityFlag"
-        uploadRawPhi:
-          $ref: "#/components/schemas/CapabilityFlag"
-        uploadCloudMetadata:
-          $ref: "#/components/schemas/CapabilityFlag"
-        retryProcessing:
-          $ref: "#/components/schemas/CapabilityFlag"
-        deleteCloudDataset:
-          $ref: "#/components/schemas/CapabilityFlag"
-        downloadResults:
-          $ref: "#/components/schemas/CapabilityFlag"
-        viewResults:
-          $ref: "#/components/schemas/CapabilityFlag"
-        workflows:
-          $ref: "#/components/schemas/Record_sc-or-fc-or-fcPlus-or-personalizedFc-or-t1Fi\
-            ttedAtlas.CapabilityFlag_"
-        processingBackend:
-          allOf:
-            - $ref: "#/components/schemas/CapabilityFlag"
-            - properties:
-                backend:
-                  type: string
-                  enum:
-                    - argo
-                    - disabled
-              required:
-                - backend
-              type: object
-      required:
-        - query
-        - newCase
-        - uploadDicomZip
-        - uploadRawPhi
-        - uploadCloudMetadata
-        - retryProcessing
-        - deleteCloudDataset
-        - downloadResults
-        - viewResults
-        - workflows
-        - processingBackend
-      type: object
-      additionalProperties: false
-    NuratomeSessionResponse:
-      properties:
-        authenticated:
-          type: boolean
-        user:
-          properties:
-            hasViewedMontageGuide:
-              type: boolean
-            role:
-              type: string
-              enum:
-                - user
-                - facilityAdmin
-                - superAdmin
-            authType:
-              $ref: "#/components/schemas/NuratomeSessionAuthType"
-            displayName:
-              type: string
-            username:
-              type: string
-            id:
-              type: string
-          required:
-            - hasViewedMontageGuide
-            - role
-            - authType
-            - displayName
-            - username
-            - id
-          type: object
-        facility:
-          properties:
-            feedbackHelp:
-              $ref: "#/components/schemas/NuratomeFeedbackHelpConfig"
-            workflowAvailability:
-              items:
-                $ref: "#/components/schemas/ProductSurfaceWorkflowAvailabilityOption"
-              type: array
-            quicktomePasswordPolicy:
-              $ref: "#/components/schemas/NuratomeQuicktomePasswordPolicy"
-            sessionDurationSeconds:
-              type: number
-              format: double
-            facilityType:
-              type: string
-            facilityCode:
-              type: string
-            id:
-              type: string
-          required:
-            - quicktomePasswordPolicy
-            - sessionDurationSeconds
-            - facilityType
-            - facilityCode
-            - id
-          type: object
-        sessionExpiresAt:
-          type: string
-        capabilities:
-          $ref: "#/components/schemas/NuratomeProductCapabilities"
-      required:
-        - authenticated
-        - capabilities
-      type: object
-      additionalProperties: false
-    HealthResponse:
-      properties:
-        ok:
-          type: boolean
-          enum:
-            - true
-          nullable: false
-        service:
-          type: string
-          enum:
-            - nuratome-server
-          nullable: false
-        version:
-          type: string
-      required:
-        - ok
-        - service
-        - version
-      type: object
-      additionalProperties: false
-    DatasetInitOutcome:
-      type: string
-      enum:
-        - reuse_existing
-        - start_upload
-        - upload_in_progress
-        - take_over_upload
-    DatasetId:
-      type: string
-    DatasetInitResponse:
-      properties:
-        outcome:
-          $ref: "#/components/schemas/DatasetInitOutcome"
-        datasetId:
-          $ref: "#/components/schemas/DatasetId"
-        studyId:
-          type: string
-        uploadSessionId:
-          type: string
-        leaseOwnerClientId:
-          type: string
-        leaseExpiresAt:
-          type: string
-        uploadBindingNonce:
-          type: string
-        bucket:
-          type: string
-        objectKey:
-          type: string
-        presignedPutUrl:
-          type: string
-        expiresAt:
-          type: string
-      required:
-        - outcome
-        - datasetId
-      type: object
-      additionalProperties: false
-    ErrorResponse:
-      properties:
-        message:
-          type: string
-      required:
-        - message
-      type: object
-      additionalProperties: false
-    InputKind:
-      type: string
-      enum:
-        - dicom-zip
-      nullable: false
-    AnonymizationMode:
-      type: string
-      enum:
-        - anonymized
-        - raw-phi
-    SequenceAvailability:
-      properties:
-        anatomical:
-          type: boolean
-        dwi:
-          type: boolean
-        bold:
-          type: boolean
-      required:
-        - anatomical
-        - dwi
-        - bold
-      type: object
-      additionalProperties: false
-    SourceZipSummary:
-      properties:
-        sizeBytes:
-          type: number
-          format: double
-          minimum: 1
-        sha256:
-          type: string
-          pattern: ^[0-9a-fA-F]{64}$
-        dicomFileCount:
-          type: integer
-          format: int32
-          minimum: 1
-        sequenceAvailability:
-          $ref: "#/components/schemas/SequenceAvailability"
-      required:
-        - sizeBytes
-        - dicomFileCount
-        - sequenceAvailability
-      type: object
-      additionalProperties: false
-    CloudPatientIdentity:
-      properties:
-        patientId:
-          type: string
-        patientName:
-          type: string
-        dateOfBirth:
-          type: string
-        studyDate:
-          type: string
-        studyInstanceUid:
-          type: string
-      required:
-        - patientId
-      type: object
-      additionalProperties: false
-    StudyIdentity:
-      properties:
-        studyInstanceUid:
-          type: string
-        studyDate:
-          type: string
-        accessionNumber:
-          type: string
-      required:
-        - studyInstanceUid
-      type: object
-      additionalProperties: false
-    DatasetInitRequest:
-      properties:
-        canonicalSourceFingerprint:
-          type: string
-        clientId:
-          type: string
-        inputKind:
-          $ref: "#/components/schemas/InputKind"
-        anonymizationMode:
-          $ref: "#/components/schemas/AnonymizationMode"
-        selectedSourceSummary:
-          $ref: "#/components/schemas/SourceZipSummary"
-        cloudPatientIdentity:
-          $ref: "#/components/schemas/CloudPatientIdentity"
-        studyIdentity:
-          $ref: "#/components/schemas/StudyIdentity"
-        artifactFingerprint:
-          type: string
-      required:
-        - canonicalSourceFingerprint
-        - clientId
-        - inputKind
-        - anonymizationMode
-        - selectedSourceSummary
-      type: object
-      additionalProperties: false
-    ProductStatus:
-      type: string
-      enum:
-        - processing
-        - processed
-        - error
-        - cancelled
-    PhiMetadata:
-      properties:
-        patientId:
-          type: string
-        patientName:
-          type: string
-        accessionNumber:
-          type: string
-        studyDate:
-          type: string
-        dateOfBirth:
-          type: string
-      type: object
-      additionalProperties: false
-    SequenceKey:
-      type: string
-      enum:
-        - anatomical
-        - dwi
-        - bold
-    WorkflowCapability:
-      properties:
-        workflowId:
-          $ref: "#/components/schemas/WorkflowId"
-        label:
-          type: string
-        enabled:
-          type: boolean
-        requiredSequences:
-          items:
-            $ref: "#/components/schemas/SequenceKey"
-          type: array
-        disabledReason:
-          type: string
-        hidesTractOrFiberUi:
-          type: boolean
-      required:
-        - workflowId
-        - label
-        - enabled
-        - requiredSequences
-      type: object
-      additionalProperties: false
-    StudyResultWorkflowReadiness:
-      properties:
-        workflow:
-          type: string
-          enum:
-            - sc
-            - fc
-            - fcPlus
-            - personalizedFc
-            - t1FittedAtlas
-        viewerReady:
-          type: boolean
-        requiredAssets:
-          items:
-            type: string
-          type: array
-        missingAssets:
-          items:
-            type: string
-          type: array
-        disabledReason:
-          type: string
-      required:
-        - workflow
-        - viewerReady
-        - requiredAssets
-        - missingAssets
-      type: object
-      additionalProperties: false
-    StudyResultSummary:
-      properties:
-        activeResultRunId:
-          type: string
-        viewerReady:
-          type: boolean
-        downloadReady:
-          type: boolean
-        viewerAssetCount:
-          type: number
-          format: double
-        downloadableArtifactCount:
-          type: number
-          format: double
-        workflowReadiness:
-          items:
-            $ref: "#/components/schemas/StudyResultWorkflowReadiness"
-          type: array
-        disabledReason:
-          type: string
-      required:
-        - viewerReady
-        - downloadReady
-        - viewerAssetCount
-        - downloadableArtifactCount
-        - workflowReadiness
-      type: object
-      additionalProperties: false
-    ActionCapability:
-      properties:
-        action:
-          type: string
-          enum:
-            - retry
-            - delete
-            - download
-            - launch
-        enabled:
-          type: boolean
-        disabledReason:
-          type: string
-      required:
-        - action
-        - enabled
-      type: object
-      additionalProperties: false
-    StudySummary:
-      properties:
-        studyId:
-          type: string
-        datasetId:
-          $ref: "#/components/schemas/DatasetId"
-        status:
-          $ref: "#/components/schemas/ProductStatus"
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        processingStage:
-          type: string
-        hoverText:
-          type: string
-        errorReason:
-          type: string
-        sequenceAvailability:
-          $ref: "#/components/schemas/SequenceAvailability"
-        workflowCapabilities:
-          items:
-            $ref: "#/components/schemas/WorkflowCapability"
-          type: array
-        result:
-          $ref: "#/components/schemas/StudyResultSummary"
-        actions:
-          items:
-            $ref: "#/components/schemas/ActionCapability"
-          type: array
-      required:
-        - studyId
-        - datasetId
-        - status
-        - createdAt
-        - updatedAt
-        - sequenceAvailability
-        - workflowCapabilities
-        - actions
-      type: object
-      additionalProperties: false
-    ExportSummary:
-      properties:
-        exportId:
-          type: string
-        datasetId:
-          $ref: "#/components/schemas/DatasetId"
-        studyId:
-          type: string
-        status:
-          $ref: "#/components/schemas/ProductStatus"
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        exportType:
-          type: string
-          enum:
-            - review-objects
-            - report
-            - derived-volume
-        hoverText:
-          type: string
-        actions:
-          items:
-            $ref: "#/components/schemas/ActionCapability"
-          type: array
-      required:
-        - exportId
-        - datasetId
-        - studyId
-        - status
-        - createdAt
-        - updatedAt
-        - exportType
-        - actions
-      type: object
-      additionalProperties: false
-    DatasetRecord:
-      properties:
-        datasetId:
-          $ref: "#/components/schemas/DatasetId"
-        facilityId:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        cloudStatus:
-          $ref: "#/components/schemas/ProductStatus"
-        cloudPatientIdentity:
-          $ref: "#/components/schemas/CloudPatientIdentity"
-        phi:
-          $ref: "#/components/schemas/PhiMetadata"
-        localMetadataStatus:
-          type: string
-          enum:
-            - local-only
-            - cloud-uploaded
-            - not-present
-        latestStudy:
-          $ref: "#/components/schemas/StudySummary"
-        studies:
-          items:
-            $ref: "#/components/schemas/StudySummary"
-          type: array
-        exports:
-          items:
-            $ref: "#/components/schemas/ExportSummary"
-          type: array
-        actions:
-          items:
-            $ref: "#/components/schemas/ActionCapability"
-          type: array
-      required:
-        - datasetId
-        - facilityId
-        - createdAt
-        - updatedAt
-        - cloudStatus
-        - localMetadataStatus
-        - studies
-        - exports
-        - actions
-      type: object
-      additionalProperties: false
-    MutationOutcome:
-      properties:
-        accepted:
-          type: boolean
-        status:
-          type: string
-          enum:
-            - accepted
-            - unavailable
-        message:
-          type: string
-      required:
-        - accepted
-        - status
-        - message
-      type: object
-      additionalProperties: false
-    DicomZipUploadInitResponse:
-      properties:
-        datasetId:
-          $ref: "#/components/schemas/DatasetId"
-        uploadId:
-          type: string
-        bucket:
-          type: string
-        objectKey:
-          type: string
-        presignedPutUrl:
-          type: string
-        expiresAt:
-          type: string
-      required:
-        - datasetId
-        - uploadId
-        - bucket
-        - objectKey
-        - presignedPutUrl
-        - expiresAt
-      type: object
-      additionalProperties: false
-    DicomZipUploadInitRequest:
-      properties:
-        inputKind:
-          $ref: "#/components/schemas/InputKind"
-        anonymizationMode:
-          $ref: "#/components/schemas/AnonymizationMode"
-        cloudObjectContainsPhi:
-          type: boolean
-        cloudPatientIdentity:
-          $ref: "#/components/schemas/CloudPatientIdentity"
-        studyIdentity:
-          $ref: "#/components/schemas/StudyIdentity"
-        sourceZipSummary:
-          $ref: "#/components/schemas/SourceZipSummary"
-        uploadPhiMetadataToCloud:
-          type: boolean
-        phi:
-          $ref: "#/components/schemas/PhiMetadata"
-      required:
-        - inputKind
-        - anonymizationMode
-        - cloudObjectContainsPhi
-        - cloudPatientIdentity
-        - studyIdentity
-        - sourceZipSummary
-      type: object
-      additionalProperties: false
-    ProcessingRunStatus:
-      type: string
-      enum:
-        - queued
-        - submitted
-        - processing
-        - processed
-        - error
-        - cancelled
-    DicomZipUploadCompleteResponse:
-      properties:
-        accepted:
-          type: boolean
-        status:
-          type: string
-          enum:
-            - accepted
-            - unavailable
-        message:
-          type: string
-        processingRunId:
-          type: string
-        processingRunStatus:
-          $ref: "#/components/schemas/ProcessingRunStatus"
-      required:
-        - accepted
-        - status
-        - message
-      type: object
-      additionalProperties: false
-    UploadedObjectSummary:
-      properties:
-        sizeBytes:
-          type: number
-          format: double
-        etag:
-          type: string
-        sha256:
-          type: string
-      required:
-        - sizeBytes
-      type: object
-      additionalProperties: false
-    DicomZipUploadCompleteRequest:
-      properties:
-        uploadedObject:
-          $ref: "#/components/schemas/UploadedObjectSummary"
-        uploadBindingNonce:
-          type: string
-        packagedSourceBindingDigest:
-          type: string
-      type: object
-      additionalProperties: false
-    CloudMetadataUploadRequest:
-      properties:
-        phi:
-          $ref: "#/components/schemas/PhiMetadata"
-      required:
-        - phi
-      type: object
-      additionalProperties: false
-    FeedbackSubmitResponse:
-      properties:
-        accepted:
-          type: boolean
-        feedbackId:
-          type: string
-        message:
-          type: string
-      required:
-        - accepted
-        - feedbackId
-        - message
-      type: object
-      additionalProperties: false
-    FeedbackRuntime:
-      type: string
-      enum:
-        - web
-        - electron
-    FeedbackSubmitRequest:
-      properties:
-        message:
-          type: string
-        routePath:
-          type: string
-        appVersion:
-          type: string
-        commitSHA:
-          type: string
-        runtime:
-          $ref: "#/components/schemas/FeedbackRuntime"
-      required:
-        - message
-        - runtime
-      type: object
-      additionalProperties: false
-    ImageType:
-      enum:
-        - png
-        - svg
-      type: string
-    Logo:
-      properties:
-        type:
-          $ref: "#/components/schemas/ImageType"
-        content:
-          type: string
-      required:
-        - type
-        - content
-      type: object
-      additionalProperties: false
-    ILoginBanner:
-      properties:
-        text:
-          type: string
-        logo:
-          allOf:
-            - $ref: "#/components/schemas/Logo"
-          nullable: true
-      required:
-        - text
-      type: object
-      additionalProperties: false
-    SessionPolicyInput:
-      properties:
-        duration:
-          type: number
-          format: double
-      type: object
-      additionalProperties: false
-    PasswordPolicyInput:
-      properties:
-        duration:
-          type: number
-          format: double
-        expiration:
-          type: number
-          format: double
-        preventReusePasswordCount:
-          type: number
-          format: double
-        passwordExpiryWarningDays:
-          type: number
-          format: double
-        minimumLength:
-          type: number
-          format: double
-        lowerCaseCount:
-          type: number
-          format: double
-        upperCaseCount:
-          type: number
-          format: double
-        numericCount:
-          type: number
-          format: double
-        specialCharacterCount:
-          type: number
-          format: double
-        specialCharacters:
-          type: string
-      type: object
-      additionalProperties: false
-    AboutConfigurationItemInput:
-      properties:
-        iconName:
-          type: string
-        title:
-          type: string
-        subtitle:
-          type: string
-        subtitle2:
-          type: string
-      required:
-        - iconName
-        - title
-      type: object
-      additionalProperties: false
-    AboutConfigurationInput:
-      properties:
-        name:
-          type: string
-        region:
-          type: string
-        configItems:
-          items:
-            $ref: "#/components/schemas/AboutConfigurationItemInput"
-          type: array
-      type: object
-      additionalProperties: false
-    CreateFacilityRequest:
-      properties:
-        facilityCode:
-          type: string
-        facilityType:
-          type: string
-        options:
-          properties:
-            password:
-              $ref: "#/components/schemas/PasswordPolicyInput"
-            session:
-              $ref: "#/components/schemas/SessionPolicyInput"
-          type: object
-        aboutConfiguration:
-          $ref: "#/components/schemas/AboutConfigurationInput"
-      required:
-        - facilityCode
-      type: object
-      additionalProperties: false
-    AboutConfigurationItem:
-      properties:
-        iconName:
-          type: string
-        title:
-          type: string
-        subtitle:
-          type: string
-        subtitle2:
-          type: string
-      required:
-        - iconName
-        - title
-      type: object
-      additionalProperties: false
-    AboutConfiguration:
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        name:
-          type: string
-        region:
-          type: string
-        configItems:
-          items:
-            $ref: "#/components/schemas/AboutConfigurationItem"
-          type: array
-      required:
-        - id
-        - createdAt
-        - updatedAt
-        - name
-        - region
-        - configItems
-      type: object
-      additionalProperties: false
-    Record_string.unknown_:
-      properties: {}
-      additionalProperties: {}
-      type: object
-      description: Construct a type with a set of properties K of type T
-    CustomMontageCreateRequest:
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        workflowType:
-          type: string
-        definitions:
-          items: {}
-          type: array
-      required:
-        - name
-        - workflowType
-        - definitions
-      type: object
-      additionalProperties: false
-    CustomMontageEditRequest:
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-      type: object
-      additionalProperties: false
-    PlatformAuthType:
-      type: string
-      enum:
-        - Quicktome
-        - SSO
-        - Federated
-    PlatformRole:
-      type: string
-      enum:
-        - user
-        - facilityAdmin
-        - superAdmin
-    FixtureUser:
-      properties:
-        id:
-          type: string
-        createdAt:
-          type: string
-        updatedAt:
-          type: string
-        schemaVersion:
-          type: string
-        authType:
-          $ref: "#/components/schemas/PlatformAuthType"
-        facility:
-          type: string
-        displayName:
-          type: string
+          format: email
         username:
           type: string
         role:
-          $ref: "#/components/schemas/PlatformRole"
-        hasViewedMontageGuide:
-          type: boolean
-        trackingOptOut:
           type: string
-          enum:
-            - trackingDisallowed
-          nullable: false
-        requiresPasswordReset:
-          type: boolean
-        disabled:
-          type: boolean
-        passwordExpiry:
+          enum: [admin, user, guest]
+        createdAt:
           type: string
-        lastLogin:
+          format: date-time
+        birthday:
           type: string
+          format: date
+        homepage:
+          type: string
+          format: uri
+        avatarId:
+          type: string
+          format: uuid
+        password:
+          type: string
+          format: password
+        isActive:
+          type: boolean
+        balance:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 3
+        address:
+          $ref: '#/components/schemas/Address'
       required:
-        - id
-        - createdAt
-        - updatedAt
-        - schemaVersion
-        - authType
-        - facility
-        - displayName
+        - userId
+        - email
         - username
         - role
-        - hasViewedMontageGuide
-        - trackingOptOut
-        - requiresPasswordReset
-        - disabled
-        - passwordExpiry
-        - lastLogin
+    Address:
       type: object
-      additionalProperties: false
-    FixtureFacility:
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+          enum: [US, CN, JP, UK]
+      required:
+        - street
+        - city
+    FormatShowcase:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        uuid:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        dateTime:
+          type: string
+          format: date-time
+        uri:
+          type: string
+          format: uri
+        password:
+          type: string
+          format: password
+        byte:
+          type: string
+          format: byte
+        binary:
+          type: string
+          format: binary
+        plainString:
+          type: string
+        stringEnum:
+          type: string
+          enum: [active, inactive, pending]
+        intEnum:
+          type: integer
+          enum: [1, 2, 3]
+        optional:
+          type: string
+          description: Optional field, sometimes null
+      required:
+        - email
+        - uuid
+        - date
+        - dateTime
+    Order:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+          description: Echoes path param when name matches
+        status:
+          type: string
+          enum: [pending, paid, shipped, delivered, cancelled]
+        priority:
+          type: integer
+          enum: [1, 2, 3]
+        totalAmount:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+          minItems: 1
+          maxItems: 5
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - orderId
+        - status
+        - items
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        quantity:
+          type: integer
+        price:
+          type: number
+      required:
+        - productId
+        - name
+        - quantity
+    Product:
+      type: object
       properties:
         id:
           type: string
-        facilityCode:
+          format: uuid
+        name:
           type: string
-        facilityType:
-          type: string
-        schemaVersion:
-          type: string
-        cloudGapServer:
-          type: boolean
-        workflowTypes:
+        price:
+          type: number
+        categories:
+          type: array
           items:
             type: string
-          type: array
-        workflowAvailability:
-          items:
-            $ref: "#/components/schemas/ProductSurfaceWorkflowAvailabilityOption"
-          type: array
-        aboutConfig:
-          type: string
-        options:
-          properties:
-            trackingEnabled:
-              type: boolean
-            minSpecEnforcement:
-              properties:
-                networkSpeed:
-                  type: string
-                OS:
-                  type: string
-                browserOutOfDate:
-                  type: string
-                browserType:
-                  type: string
-                memory:
-                  type: string
-                screenResolution:
-                  type: string
-              required:
-                - networkSpeed
-                - OS
-                - browserOutOfDate
-                - browserType
-                - memory
-                - screenResolution
-              type: object
-            password:
-              properties:
-                upperCaseCount:
-                  type: number
-                  format: double
-                specialCharacters:
-                  type: string
-                specialCharacterCount:
-                  type: number
-                  format: double
-                numericCount:
-                  type: number
-                  format: double
-                minimumLength:
-                  type: number
-                  format: double
-                lowerCaseCount:
-                  type: number
-                  format: double
-                expiration:
-                  type: number
-                  format: double
-              required:
-                - upperCaseCount
-                - specialCharacters
-                - specialCharacterCount
-                - numericCount
-                - minimumLength
-                - lowerCaseCount
-                - expiration
-              type: object
-            session:
-              properties:
-                duration:
-                  type: number
-                  format: double
-              required:
-                - duration
-              type: object
-          required:
-            - trackingEnabled
-            - minSpecEnforcement
-            - password
-            - session
+            enum: [electronics, books, clothing, food]
+          minItems: 1
+          maxItems: 2
+        inStock:
+          type: boolean
+        metadata:
           type: object
+          properties:
+            manufacturer:
+              type: string
+            sku:
+              type: string
+          required:
+            - manufacturer
       required:
         - id
-        - facilityCode
-        - facilityType
-        - schemaVersion
-        - cloudGapServer
-        - workflowTypes
-        - workflowAvailability
-        - aboutConfig
-        - options
+        - name
+        - price
+    Node:
       type: object
-      additionalProperties: false
-    FixtureSession:
+      description: Circular reference - Node.next references Node
       properties:
-        user:
-          $ref: "#/components/schemas/FixtureUser"
-        facility:
-          $ref: "#/components/schemas/FixtureFacility"
+        value:
+          type: integer
+        label:
+          type: string
+        next:
+          $ref: '#/components/schemas/Node'
       required:
-        - user
-        - facility
+        - value
+    MutationResult:
       type: object
-      additionalProperties: false
-    LoginRequest:
       properties:
-        facilityCode:
-          type: string
-        username:
-          type: string
-        password:
-          type: string
-        pin:
-          type: string
-      required:
-        - facilityCode
-        - username
-      type: object
-      additionalProperties: false
-    LogoutResponse:
-      properties:
-        ok:
+        success:
           type: boolean
-          enum:
-            - true
-          nullable: false
+        affected:
+          type: integer
+        message:
+          type: string
       required:
-        - ok
-      type: object
-      additionalProperties: false
-  securitySchemes: {}
-info:
-  title: "@nuratome/server"
-  version: 0.1.0
-  description: Nuratome backend API server
-  license:
-    name: UNLICENSED
-  contact:
-    name: edxi
-paths:
-  /users/{facilityId}/{userId}/disable:
-    put:
-      operationId: disableUser
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
+        - success
+  responses:
+    HealthResponse:
+      description: Health check response
+      content:
+        application/json:
           schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-  /users/{facilityId}/{userId}/restore:
-    put:
-      operationId: restoreUser
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-  /users/{facilityId}/{userId}/changeRole:
-    put:
-      operationId: changeRole
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                role:
-                  type: string
-                  enum:
-                    - user
-                    - facilityAdmin
-                    - superAdmin
-              required:
-                - role
-              type: object
-  /users/{facilityId}/{userId}/updateDisplayName:
-    put:
-      operationId: updateDisplayName
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                displayName:
-                  type: string
-              required:
-                - displayName
-              type: object
-  /users/{facilityId}/{userId}/updateTrackingOptOut:
-    put:
-      operationId: updateTrackingOptOut
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                trackingOptOut:
-                  type: string
-                  enum:
-                    - unset
-                    - trackingAllowed
-                    - trackingDisallowed
-              required:
-                - trackingOptOut
-              type: object
-  /users/{facilityId}/{userId}/updateHasViewedMontageInstructions:
-    put:
-      operationId: updateHasViewedMontageInstructions
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                hasViewed:
-                  type: boolean
-              type: object
-  /users/{facilityId}/{userId}/changePin:
-    put:
-      operationId: changePin
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                properties:
-                  mismatchingPin:
-                    type: boolean
-                required:
-                  - mismatchingPin
-                type: object
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                newPin:
-                  type: string
-                currentPin:
-                  type: string
-              required:
-                - newPin
-                - currentPin
-              type: object
-  /users/{userId}/changePassword:
-    put:
-      operationId: changePassword
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                newPassword:
-                  type: string
-                currentPassword:
-                  type: string
-              required:
-                - newPassword
-                - currentPassword
-              type: object
-  /users/{userId}/resetPasswordPin:
-    put:
-      operationId: resetPasswordPin
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                newPin:
-                  type: string
-                currentPin:
-                  type: string
-                newPassword:
-                  type: string
-                currentPassword:
-                  type: string
-              required:
-                - newPin
-                - currentPin
-                - newPassword
-                - currentPassword
-              type: object
-  /users/forgotPassword:
-    put:
-      operationId: forgotPassword
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Record_string.never_"
-      security: []
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                language:
-                  type: string
-                username:
-                  type: string
-                facilityCode:
-                  type: string
-              required:
-                - language
-                - username
-                - facilityCode
-              type: object
-  /study-assets/{facilityId}/{jobId}/manifest:
-    get:
-      operationId: getJobManifest
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StudyAssetsJobManifest"
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: jobId
-          required: true
-          schema:
-            type: string
-  /study-assets/{facilityId}/{jobId}/anatomical:
-    get:
-      operationId: getAnatomical
-      responses:
-        "200":
-          description: OK
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: jobId
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: seriesId
-          required: false
-          schema:
-            type: string
-  /study-assets/{facilityId}/{jobId}/atlas:
-    get:
-      operationId: getAtlas
-      responses:
-        "200":
-          description: OK
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: jobId
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: atlas
-          required: false
-          schema:
-            $ref: "#/components/schemas/AtlasTypes"
-        - in: query
-          name: usageId
-          required: false
-          schema:
-            type: string
-  /study-assets/{facilityId}/{jobId}/only-tracts:
-    post:
-      operationId: streamTracts
-      responses:
-        "200":
-          description: OK
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: jobId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TractStreamingRequest"
-  /study-assets/{facilityId}/{jobId}/connectome:
-    get:
-      operationId: getConnectome
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/StudyAssetsConnectomeData"
-        "422":
-          description: Invalid connectome request
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: jobId
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: model
-          required: true
-          schema:
-            $ref: "#/components/schemas/DataScienceModel"
-        - in: query
-          name: dataType
-          required: true
-          schema:
-            $ref: "#/components/schemas/DataType"
-        - in: query
-          name: std
-          required: false
-          schema:
-            $ref: "#/components/schemas/StandardDeviation"
-  /study-assets/{facilityId}/{jobId}/connectomeReport:
-    get:
-      operationId: getConnectomeReport
-      responses:
-        "200":
-          description: OK
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: jobId
-          required: true
-          schema:
-            type: string
-  /session:
-    get:
-      operationId: getSession
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NuratomeSessionResponse"
-      security: []
-      parameters: []
-  /facilities/{facilityId}/invitations:
-    post:
-      operationId: createInvitation
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                properties:
-                  expiresAt:
-                    type: string
-                  inviteUrl:
-                    type: string
-                  token:
-                    type: string
-                required:
-                  - expiresAt
-                  - inviteUrl
-                  - token
-                type: object
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                singleUse:
-                  type: boolean
-                expiresInDays:
-                  type: number
-                  format: double
-                displayName:
-                  type: string
-                role:
-                  type: string
-                  enum:
-                    - user
-                    - facilityAdmin
-                    - superAdmin
-              required:
-                - role
-              type: object
-  /invitations/{invitationToken}:
-    get:
-      operationId: validateInvitation
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: invitationToken
-          required: true
-          schema:
-            type: string
-  /health:
-    get:
-      operationId: getHealth
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HealthResponse"
-      security: []
-      parameters: []
-  /datasets/init:
-    post:
-      operationId: initDataset
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DatasetInitResponse"
-        "422":
-          description: Invalid dataset init request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DatasetInitRequest"
-  /datasets:
-    get:
-      operationId: listDatasets
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/DatasetRecord"
-                type: array
-      security: []
-      parameters: []
-  /datasets/{datasetId}:
-    get:
-      operationId: getDataset
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DatasetRecord"
-        "404":
-          description: Dataset not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-    delete:
-      operationId: deleteDataset
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MutationOutcome"
-        "404":
-          description: Dataset not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-  /datasets/{datasetId}/studies/{studyId}/retry:
-    post:
-      operationId: retryStudy
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MutationOutcome"
-        "404":
-          description: Study not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: studyId
-          required: true
-          schema:
-            type: string
-  /datasets/{datasetId}/exports/{exportId}:
-    delete:
-      operationId: deleteExport
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MutationOutcome"
-        "404":
-          description: Export not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: exportId
-          required: true
-          schema:
-            type: string
-  /datasets/{datasetId}/exports/{exportId}/download:
-    post:
-      operationId: downloadExport
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MutationOutcome"
-        "404":
-          description: Export not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: exportId
-          required: true
-          schema:
-            type: string
-  /datasets/{datasetId}/uploads/dicom-zip/init:
-    post:
-      operationId: initDicomZipUpload
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DicomZipUploadInitResponse"
-        "422":
-          description: Invalid upload request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DicomZipUploadInitRequest"
-  /datasets/{datasetId}/uploads/{uploadId}/complete:
-    post:
-      operationId: completeDicomZipUpload
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DicomZipUploadCompleteResponse"
-        "404":
-          description: Upload not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: uploadId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DicomZipUploadCompleteRequest"
-  /datasets/{datasetId}/metadata/cloud:
-    post:
-      operationId: uploadCloudMetadata
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MutationOutcome"
-        "404":
-          description: Dataset not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters:
-        - in: path
-          name: datasetId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CloudMetadataUploadRequest"
-  /feedback:
-    post:
-      operationId: submitFeedback
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FeedbackSubmitResponse"
-        "401":
-          description: Authentication required
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: Invalid feedback
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      security: []
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FeedbackSubmitRequest"
-  /auth/federated/login:
-    get:
-      operationId: startAuthingInvitationLogin
-      responses:
-        "204":
-          description: No content
-      security: []
-      parameters:
-        - in: query
-          name: invitationToken
-          required: true
-          schema:
-            type: string
-  /auth/federated/facility-login:
-    get:
-      operationId: startAuthingFacilityLogin
-      responses:
-        "204":
-          description: No content
-      security: []
-      parameters:
-        - in: query
-          name: facilityCode
-          required: true
-          schema:
-            type: string
-  /auth/federated/callback:
-    get:
-      operationId: completeAuthingFacilityLogin
-      responses:
-        "204":
-          description: No content
-      security: []
-      parameters:
-        - in: query
-          name: code
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: state
-          required: false
-          schema:
-            type: string
-  /facility-configs/loginBanner:
-    get:
-      operationId: getLoginBanner
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ILoginBanner"
-      security: []
-      parameters:
-        - in: query
-          name: facilityId
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: facilityCode
-          required: false
-          schema:
-            type: string
-  /facilities/create:
-    post:
-      operationId: createFacility
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateFacilityRequest"
-  /facilities/aboutConfiguration/{facilityId}:
-    get:
-      operationId: getAboutConfiguration
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AboutConfiguration"
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-  /facilities/{facilityId}:
-    get:
-      operationId: getFacilityById
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-  /facilities/{facilityId}/createUser:
-    post:
-      operationId: createUser
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                language:
-                  type: string
-                role:
-                  type: string
-                  enum:
-                    - user
-                    - facilityAdmin
-                    - superAdmin
-                displayName:
-                  type: string
-                username:
-                  type: string
-              required:
-                - language
-                - role
-                - displayName
-                - username
-              type: object
-  /facilities/{facilityId}/createUserAtFacility:
-    post:
-      operationId: createUserAtFacility
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema: {}
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                language:
-                  type: string
-                role:
-                  type: string
-                  enum:
-                    - user
-                    - facilityAdmin
-                    - superAdmin
-                displayName:
-                  type: string
-                username:
-                  type: string
-                atFacilityCode:
-                  type: string
-              required:
-                - language
-                - role
-                - displayName
-                - username
-                - atFacilityCode
-              type: object
-  /facility-idp/{facilityId}:
-    get:
-      operationId: getFacilityIdp
-      responses:
-        "204":
-          description: No Content
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-  /custom-montages/{facilityId}:
-    get:
-      operationId: findCustomMontages
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: "#/components/schemas/Record_string.unknown_"
-                type: array
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-  /custom-montages/{facilityId}/create:
-    post:
-      operationId: createCustomMontage
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
+            type: object
+            properties:
+              status:
                 type: string
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CustomMontageCreateRequest"
-  /custom-montages/{facilityId}/{montageId}/editMontage:
-    post:
-      operationId: editMontage
-      responses:
-        "204":
-          description: No Content
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: montageId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CustomMontageEditRequest"
-  /custom-montages/{facilityId}/{montageId}/disable:
-    put:
-      operationId: disableCustomMontage
-      responses:
-        "204":
-          description: No Content
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: montageId
-          required: true
-          schema:
-            type: string
-  /custom-montages/{facilityId}/{montageId}/restore:
-    put:
-      operationId: restoreCustomMontage
-      responses:
-        "204":
-          description: No Content
-      security: []
-      parameters:
-        - in: path
-          name: facilityId
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: montageId
-          required: true
-          schema:
-            type: string
-  /auth/renewToken:
-    post:
-      operationId: renewToken
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FixtureSession"
-      security: []
-      parameters: []
-  /auth/login:
-    post:
-      operationId: login
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FixtureSession"
-      security: []
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-  /auth/logout:
-    get:
-      operationId: logout
-      responses:
-        "200":
-          description: Ok
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LogoutResponse"
-      security: []
-      parameters: []
-servers:
-  - url: /api/v1
+                enum: [ok, degraded]
+              version:
+                type: string
+              uptime:
+                type: integer
+            required:
+              - status
+              - version

@@ -1,6 +1,6 @@
 {
-  "name": "mock-cli",
-  "version": "0.1.1",
+  "name": "@mock-cli/server",
+  "version": "0.1.2",
   "description": "Blazing fast OpenAPI Mock Server in Rust. Start mocking in milliseconds. Zero config. Dynamic fake data.",
   "license": "MIT",
   "repository": {
@@ -20,11 +20,11 @@
     "mock-cli": "bin/mock-cli.js"
   },
   "optionalDependencies": {
-    "@mock-cli/darwin-arm64": "0.1.1",
-    "@mock-cli/darwin-x64": "0.1.1",
-    "@mock-cli/linux-arm64": "0.1.1",
-    "@mock-cli/linux-x64": "0.1.1",
-    "@mock-cli/win32-x64": "0.1.1"
+    "@mock-cli/darwin-arm64": "0.1.2",
+    "@mock-cli/darwin-x64": "0.1.2",
+    "@mock-cli/linux-arm64": "0.1.2",
+    "@mock-cli/linux-x64": "0.1.2",
+    "@mock-cli/win32-x64": "0.1.2"
   },
   "engines": {
     "node": ">=14"
