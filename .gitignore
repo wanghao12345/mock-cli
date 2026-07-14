@@ -1,1 +1,5 @@
 /target
+
+# npm platform binaries (downloaded from GitHub Release by publish.sh, not committed)
+/npm/platforms/*/mock-cli
+/npm/platforms/*/mock-cli.exe

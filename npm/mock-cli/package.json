@@ -1,0 +1,35 @@
+{
+  "name": "mock-cli",
+  "version": "0.1.1",
+  "description": "Blazing fast OpenAPI Mock Server in Rust. Start mocking in milliseconds. Zero config. Dynamic fake data.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wanghao12345/mock-cli"
+  },
+  "homepage": "https://github.com/wanghao12345/mock-cli",
+  "keywords": [
+    "openapi",
+    "mock",
+    "mock-server",
+    "swagger",
+    "fake-data",
+    "rust"
+  ],
+  "bin": {
+    "mock-cli": "bin/mock-cli.js"
+  },
+  "optionalDependencies": {
+    "@mock-cli/darwin-arm64": "0.1.1",
+    "@mock-cli/darwin-x64": "0.1.1",
+    "@mock-cli/linux-arm64": "0.1.1",
+    "@mock-cli/linux-x64": "0.1.1",
+    "@mock-cli/win32-x64": "0.1.1"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "files": [
+    "bin/"
+  ]
+}

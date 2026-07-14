@@ -1,0 +1,9 @@
+{
+  "name": "@mock-cli/darwin-x64",
+  "version": "0.1.1",
+  "description": "mock-cli for macOS x64 (Intel)",
+  "license": "MIT",
+  "os": ["darwin"],
+  "cpu": ["x64"],
+  "files": ["mock-cli"]
+}
