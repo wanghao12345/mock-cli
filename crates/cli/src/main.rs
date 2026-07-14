@@ -1,9 +1,9 @@
-use std::{fs, path::PathBuf};
 use anyhow::Context;
 use clap::Parser;
-use mock_cli_core::{generate_mock, parse_spec};
-
-
+use mock_cli_core::parse_spec;
+use mock_cli_server::build_router;
+use std::{fs, net::SocketAddr, path::PathBuf, sync::Arc};
+use tokio::net::TcpListener;
 
 #[derive(Parser, Debug)]
 #[command(version, about = "🚀 Blazing fast OpenAPI Mock Server")]
@@ -19,16 +19,19 @@ struct Cli {
 async fn main() -> anyhow::Result<()> {
     // Parse the command line arguments.
     let cli = Cli::parse();
-    let content = fs::read_to_string(&cli.spec).with_context(|| format!("Failed to read file: {}", cli.spec.display()))?;
+    let content = fs::read_to_string(&cli.spec)
+        .with_context(|| format!("Failed to read file: {}", cli.spec.display()))?;
     // Check if the file is a JSON file.
     let is_json = cli.spec.extension().map_or(false, |ext| ext == "json");
 
-    // Parse the spec.
-    let spec = parse_spec(&content, is_json)?;
-    // Generate the mock server.
-    generate_mock(&spec)?;
+    let spec = Arc::new(parse_spec(&content, is_json)?);
+    println!("✓ Loaded {:?} ({} paths)", cli.spec, spec.paths.paths.len());
 
+    let addr = SocketAddr::from(([127, 0, 0, 1], cli.port));
+    println!("✓ Listening on {}\n", &addr);
 
-
+    let router = build_router(spec);
+    let listener = TcpListener::bind(&addr).await?;
+    axum::serve(listener, router).await?;
     Ok(())
 }

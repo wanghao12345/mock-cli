@@ -13,5 +13,6 @@ colored = { workspace = true }
 clap = { workspace = true }
 anyhow = { workspace = true }
 tokio = { workspace = true }
+axum = { workspace = true }
 mock-cli-server = { path = "../server" }
 mock-cli-core = { path = "../core" }
