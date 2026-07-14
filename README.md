@@ -80,16 +80,16 @@ mock-cli petstore.yaml
 
 ```text
 ✓ Loaded "petstore.yaml" (1 paths)
-✓ Listening on http://localhost:3001
+✓ Listening on http://localhost:3333
 ```
 
 **3. Get dynamic fake data:**
 
 ```bash
-curl http://localhost:3001/pets/123
+curl http://localhost:3333/pets/123
 # {"id":482,"name":"Dr. Margret Kihn","vaccinated":true}
 
-curl http://localhost:3001/pets/456
+curl http://localhost:3333/pets/456
 # {"id":73,"name":"Sarah Connor","vaccinated":false}
 ```
 
@@ -104,7 +104,7 @@ ARGS:
       OpenAPI spec file path (YAML or JSON)
 
 OPTIONS:
-  -p, --port    Port to listen on [default: 3001]
+  -p, --port    Port to listen on [default: 3333]
   -h, --help          Print help
   -V, --version       Print version
 ```
@@ -115,7 +115,6 @@ OPTIONS:
 |---------|--------|--------|
 | Basic GET mocking with dynamic data | ✅ Done | v0.1.0 |
 | Hot reload on spec change | 🔜 Next | v0.2.0 |
-| POST/PUT/DELETE support | 🔜 Next | v0.2.0 |
 | `$ref` resolution & circular ref safety | 📋 Planned | v0.3.0 |
 | Request validation against spec | 📋 Planned | v0.3.0 |
 | Custom faker rules via config | 📋 Planned | v1.0.0 |
