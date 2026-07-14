@@ -42,12 +42,6 @@ npm install -g @mock-cli/server
 
 npm 包会自动安装匹配你平台的预编译二进制（macOS / Linux / Windows，x64 / arm64）。无需 Rust 工具链。
 
-### Homebrew
-
-```bash
-brew install wanghao12345/mock-cli/mock-cli
-```
-
 ### 预编译二进制
 
 从 [GitHub Releases](https://github.com/wanghao12345/mock-cli/releases) 下载对应平台的最新版本。
