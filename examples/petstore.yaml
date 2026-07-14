@@ -26,6 +26,12 @@ components:
       properties:
         id:
           type: integer
+        email:
+          type: string
+        list:
+          type: array
+          items:
+            type: string
         name:
           type: string
         tag:

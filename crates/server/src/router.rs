@@ -1,19 +1,30 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
-use axum::{Json, Router, routing::{MethodRouter, delete, get, options, patch, post, put}};
+use axum::{
+    Json, Router,
+    extract::Path,
+    http::StatusCode,
+    routing::{MethodRouter, delete, get, options, patch, post, put},
+};
 use mock_cli_core::generate_mock;
 use openapiv3::{OpenAPI, PathItem};
 
+/// Build a handler for a single HTTP method on a path.
+/// Uses axum's `Path` extractor to pull path params (e.g. `petId` from
+/// `/pets/{petId}`) and forwards them to `generate_mock`, so generated
+/// mock data can echo the request context back to the caller.
 fn make_handler(
     spec: Arc<OpenAPI>,
     path: String,
     method: &'static str,
-) -> impl Fn() -> std::future::Ready<Json<serde_json::Value>> + Clone + Send + Sync + 'static {
-    move || {
-        let s = spec.clone();
-        let p = path.clone();
-        let m = method;
-        std::future::ready(Json(generate_mock(&s, &p, m)))
+) -> impl Fn(Path<HashMap<String, String>>) -> std::future::Ready<(StatusCode, Json<serde_json::Value>)>
+       + Clone + Send + Sync + 'static {
+    move |Path(params): Path<HashMap<String, String>>| {
+        let (status, value) = generate_mock(&spec, &path, method, &params);
+        // The core layer returns a u16 status code; convert to axum's
+        // StatusCode (falls back to 500 if the code is somehow invalid).
+        let status = StatusCode::from_u16(status).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+        std::future::ready((status, Json(value)))
     }
 }
 
